@@ -1,0 +1,5 @@
+{
+  "name": "SSDLC Juice Shop",
+  "postCreateCommand": "pip install -r requirements.txt && echo 'export PATH=$PATH:/home/codespace/.local/lib/python3.12/site-packages/bin' >> ~/.bashrc",
+  "forwardPorts": [3000, 5000]
+}
