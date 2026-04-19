@@ -8,9 +8,47 @@ Furthermore, we are using Juice-Shop to discover risks and vulnerabilities that 
 - Member 2 – Juan David Londoño Pinzón
 - Member 3 – Santiago Melo Aguirre
 ---
- 
+ # How to run in CodeSpaces
+---
 
-# How to run in your own machine
+- Installs all dependencies from ```requirements.txt``` by running:
+  ```bash
+  pip install -r requirements.txt
+  ```
+- Configures the PATH so the `semgrep` command works in the terminal:
+  ```bash
+  export PATH=$PATH:/home/codespace/.local/lib/python3.12/site-packages/bin
+  ```
+- Downloads and initializes the Juice Shop submodule by running:
+  ```bash
+  git submodule update --init --recursive
+  ```
+ 
+---
+### 2. Verify everything is ready
+ 
+```bash
+semgrep --version
+ls juice-shop/
+```
+ 
+You should see Semgrep's version number and the Juice Shop files listed.
+---
+
+### 3. Run a Semgrep scan
+ 
+```bash
+semgrep --config=p/javascript juice-shop/ --json | python -m json.tool > reports/semgrep-results.json
+```
+ 
+Check how many findings were detected:
+ 
+```bash
+grep -c '"check_id"' reports/semgrep-results.json
+```
+ 
+---
+# How to run in your OWN MACHINE
  
 ## Mandatory Downloads
  
@@ -103,8 +141,8 @@ git submodule update --recursive
 ```
  
 ---
- 
- 
+
+
 
  
 ## References
