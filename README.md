@@ -1,4 +1,4 @@
-# SSSLC - 2026-1
+# SSDLC - 2026-1
 
 This project demonstrates security integration across the full software development using OWASP Juice Shop as the target application. It covers a functional system, threat modeling, and an automated DevSecOps pipeline.
 Furthermore, we are using Juice-Shop to discover risks and vulnerabilities that the web environment has.
