@@ -1,0 +1,93 @@
+name: Semgrep Auth and Users
+
+on:
+  pull_request: 
+    branches: [main]
+  workflow_dispatch: {}
+    
+permissions:
+  contents: read
+
+jobs:
+  semgrep-auth:
+    name: Authentication - Module
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+            submodules: recursive
+      - name: Install Semgrep
+        run: pip install semgrep==1.159.0
+
+      - name: Run Semgrep on auth module
+        run: |
+          semgrep --config=p/javascript \
+            juice-shop/routes/login.ts \
+            juice-shop/routes/changePassword.ts \
+            juice-shop/routes/resetPassword.ts \
+            juice-shop/routes/currentUser.ts \
+            juice-shop/routes/authenticatedUsers.ts \
+            juice-shop/routes/userProfile.ts \
+            juice-shop/routes/updateUserProfile.ts \
+            juice-shop/models/user.ts \
+            juice-shop/lib/insecurity.ts \
+            --json | python -m json.tool > reports/semgrep-auth-results.json
+
+      - name: Upload Semgrep results
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-auth-results
+          path: reports/semgrep-auth-results.json
+
+      - name: Check for critical vulnerabilities
+        run: |
+          CRITICAL=$(python3 -c "
+          import json, sys
+          with open('reports/semgrep-auth-results.json') as f:
+              data = json.load(f)
+          critical = [r for r in data.get('results', []) if r.get('extra', {}).get('severity') == 'ERROR']
+          print(len(critical))
+          ")
+          echo "Critical vulnerabilities found: $CRITICAL"
+          if [ "$CRITICAL" -gt 0 ]; then
+            echo "Pipeline blocked: $CRITICAL critical vulnerabilities detected in auth module"
+            exit 1
+          fi
+
+  npm-audit:
+    name: SCA - Dependency Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          
+      - name: Install dependencies
+        run: |
+          cd juice-shop
+          npm install --legacy--peer-deps
+
+      - name: Run npm audit
+        run: | 
+          cd juice-shop
+          npm audit --json | python3 -m json.tool > ../reports/npm-audit-results.json
+        continue-on-error: true
+
+      - name: Upload npm audit results
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-results
+          path: reports/npm-audit-results.json
+ 
+      - name: Check for critical dependencies
+        run: |
+          CRITICAL=$(grep -c '"severity":"critical"' reports/npm-audit-results.json || echo 0)
+          echo "Critical dependencies found: $CRITICAL"
+          if [ "$CRITICAL" -gt 0 ]; then
+            echo "Pipeline blocked: $CRITICAL critical vulnerable dependencies detected"
+            exit 1
+          fi
