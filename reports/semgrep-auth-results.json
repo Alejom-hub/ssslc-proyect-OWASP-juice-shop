@@ -1,0 +1,262 @@
+{
+    "version": "1.159.0",
+    "results": [
+        {
+            "check_id": "javascript.jsonwebtoken.security.jwt-hardcode.hardcoded-jwt-secret",
+            "path": "juice-shop/lib/insecurity.ts",
+            "start": {
+                "line": 56,
+                "col": 56,
+                "offset": 2827
+            },
+            "end": {
+                "line": 56,
+                "col": 66,
+                "offset": 2837
+            },
+            "extra": {
+                "message": "A hard-coded credential was detected. It is not recommended to store credentials in source-code, as this risks secrets being leaked and used by either an internal or external malicious adversary. It is recommended to use environment variables to securely provide credentials or retrieve credentials from a secure vault or HSM (Hardware Security Module).",
+                "metadata": {
+                    "cwe": [
+                        "CWE-798: Use of Hard-coded Credentials"
+                    ],
+                    "references": [
+                        "https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html"
+                    ],
+                    "owasp": [
+                        "A07:2021 - Identification and Authentication Failures",
+                        "A07:2025 - Authentication Failures"
+                    ],
+                    "asvs": {
+                        "control_id": "3.5.2 Static API keys or secret",
+                        "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x12-V3-Session-management.md#v35-token-based-session-management",
+                        "section": "V3: Session Management Verification Requirements",
+                        "version": "4"
+                    },
+                    "category": "security",
+                    "technology": [
+                        "jwt",
+                        "javascript",
+                        "secrets"
+                    ],
+                    "cwe2022-top25": true,
+                    "cwe2021-top25": true,
+                    "subcategory": [
+                        "vuln"
+                    ],
+                    "likelihood": "HIGH",
+                    "impact": "MEDIUM",
+                    "confidence": "HIGH",
+                    "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+                    "vulnerability_class": [
+                        "Hard-coded Secrets"
+                    ],
+                    "source": "https://semgrep.dev/r/javascript.jsonwebtoken.security.jwt-hardcode.hardcoded-jwt-secret",
+                    "shortlink": "https://sg.run/4xN9"
+                },
+                "severity": "WARNING",
+                "fingerprint": "requires login",
+                "lines": "requires login",
+                "validation_state": "NO_VALIDATOR",
+                "engine_kind": "OSS"
+            }
+        },
+        {
+            "check_id": "javascript.sequelize.security.audit.sequelize-injection-express.express-sequelize-injection",
+            "path": "juice-shop/routes/login.ts",
+            "start": {
+                "line": 34,
+                "col": 28,
+                "offset": 1459
+            },
+            "end": {
+                "line": 34,
+                "col": 169,
+                "offset": 1600
+            },
+            "extra": {
+                "message": "Detected a sequelize statement that is tainted by user-input. This could lead to SQL injection if the variable is user-controlled and is not properly sanitized. In order to prevent SQL injection, it is recommended to use parameterized queries or prepared statements.",
+                "metadata": {
+                    "interfile": true,
+                    "references": [
+                        "https://sequelize.org/docs/v6/core-concepts/raw-queries/#replacements"
+                    ],
+                    "category": "security",
+                    "technology": [
+                        "express"
+                    ],
+                    "cwe": [
+                        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+                    ],
+                    "owasp": [
+                        "A01:2017 - Injection",
+                        "A03:2021 - Injection",
+                        "A05:2025 - Injection"
+                    ],
+                    "cwe2022-top25": true,
+                    "cwe2021-top25": true,
+                    "subcategory": [
+                        "vuln"
+                    ],
+                    "likelihood": "HIGH",
+                    "impact": "HIGH",
+                    "confidence": "HIGH",
+                    "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+                    "vulnerability_class": [
+                        "SQL Injection"
+                    ],
+                    "source": "https://semgrep.dev/r/javascript.sequelize.security.audit.sequelize-injection-express.express-sequelize-injection",
+                    "shortlink": "https://sg.run/gjoe"
+                },
+                "severity": "ERROR",
+                "fingerprint": "requires login",
+                "lines": "requires login",
+                "validation_state": "NO_VALIDATOR",
+                "engine_kind": "OSS"
+            }
+        },
+        {
+            "check_id": "javascript.lang.security.audit.code-string-concat.code-string-concat",
+            "path": "juice-shop/routes/userProfile.ts",
+            "start": {
+                "line": 62,
+                "col": 20,
+                "offset": 1855
+            },
+            "end": {
+                "line": 62,
+                "col": 30,
+                "offset": 1865
+            },
+            "extra": {
+                "message": "Found data from an Express or Next web request flowing to `eval`. If this data is user-controllable this can lead to execution of arbitrary system commands in the context of your application process. Avoid `eval` whenever possible.",
+                "metadata": {
+                    "interfile": true,
+                    "confidence": "HIGH",
+                    "owasp": [
+                        "A03:2021 - Injection",
+                        "A05:2025 - Injection"
+                    ],
+                    "cwe": [
+                        "CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')"
+                    ],
+                    "references": [
+                        "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval",
+                        "https://nodejs.org/api/child_process.html#child_processexeccommand-options-callback",
+                        "https://www.stackhawk.com/blog/nodejs-command-injection-examples-and-prevention/",
+                        "https://ckarande.gitbooks.io/owasp-nodegoat-tutorial/content/tutorial/a1_-_server_side_js_injection.html"
+                    ],
+                    "category": "security",
+                    "technology": [
+                        "node.js",
+                        "Express",
+                        "Next.js"
+                    ],
+                    "subcategory": [
+                        "vuln"
+                    ],
+                    "likelihood": "MEDIUM",
+                    "impact": "MEDIUM",
+                    "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+                    "vulnerability_class": [
+                        "Code Injection"
+                    ],
+                    "source": "https://semgrep.dev/r/javascript.lang.security.audit.code-string-concat.code-string-concat",
+                    "shortlink": "https://sg.run/96Yk"
+                },
+                "severity": "ERROR",
+                "fingerprint": "requires login",
+                "lines": "requires login",
+                "validation_state": "NO_VALIDATOR",
+                "engine_kind": "OSS"
+            }
+        }
+    ],
+    "errors": [],
+    "paths": {
+        "scanned": [
+            "juice-shop/lib/insecurity.ts",
+            "juice-shop/models/user.ts",
+            "juice-shop/routes/authenticatedUsers.ts",
+            "juice-shop/routes/changePassword.ts",
+            "juice-shop/routes/currentUser.ts",
+            "juice-shop/routes/login.ts",
+            "juice-shop/routes/resetPassword.ts",
+            "juice-shop/routes/updateUserProfile.ts",
+            "juice-shop/routes/userProfile.ts"
+        ]
+    },
+    "time": {
+        "rules": [],
+        "rules_parse_time": 0.4099438190460205,
+        "profiling_times": {
+            "config_time": 0.8741278648376465,
+            "core_time": 1.402160882949829,
+            "ignores_time": 0.0001621246337890625,
+            "total_time": 2.2916579246520996
+        },
+        "parsing_time": {
+            "total_time": 0.0,
+            "per_file_time": {
+                "mean": 0.0,
+                "std_dev": 0.0
+            },
+            "very_slow_stats": {
+                "time_ratio": 0.0,
+                "count_ratio": 0.0
+            },
+            "very_slow_files": []
+        },
+        "scanning_time": {
+            "total_time": 0.7939035892486572,
+            "per_file_time": {
+                "mean": 0.08821150991651747,
+                "std_dev": 0.004669724321469863
+            },
+            "very_slow_stats": {
+                "time_ratio": 0.0,
+                "count_ratio": 0.0
+            },
+            "very_slow_files": []
+        },
+        "matching_time": {
+            "total_time": 0.0,
+            "per_file_and_rule_time": {
+                "mean": 0.0,
+                "std_dev": 0.0
+            },
+            "very_slow_stats": {
+                "time_ratio": 0.0,
+                "count_ratio": 0.0
+            },
+            "very_slow_rules_on_files": []
+        },
+        "tainting_time": {
+            "total_time": 0.0,
+            "per_def_and_rule_time": {
+                "mean": 0.0,
+                "std_dev": 0.0
+            },
+            "very_slow_stats": {
+                "time_ratio": 0.0,
+                "count_ratio": 0.0
+            },
+            "very_slow_rules_on_defs": []
+        },
+        "fixpoint_timeouts": [],
+        "prefiltering": {
+            "project_level_time": 0.0,
+            "file_level_time": 0.0,
+            "rules_with_project_prefilters_ratio": 0.0,
+            "rules_with_file_prefilters_ratio": 1.0,
+            "rules_selected_ratio": 0.057057057057057055,
+            "rules_matched_ratio": 0.057057057057057055
+        },
+        "targets": [],
+        "total_bytes": 0,
+        "max_memory_bytes": 272508160
+    },
+    "engine_requested": "OSS",
+    "skipped_rules": [],
+    "profiling_results": []
+}

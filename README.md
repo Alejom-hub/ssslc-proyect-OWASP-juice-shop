@@ -35,18 +35,23 @@ ls juice-shop/
 You should see Semgrep's version number and the Juice Shop files listed.
 ---
 
-### 3. Run a Semgrep scan
+### 3. Run a Semgrep scan (General Results)
  
 ```bash
 semgrep --config=p/javascript juice-shop/ --json | python -m json.tool > reports/semgrep-results.json
 ```
- 
+
 Check how many findings were detected:
  
 ```bash
 grep -c '"check_id"' reports/semgrep-results.json
 ```
- 
+
+### 4. If you want to run specific routes (Authentication and Users)
+```bash
+semgrep --config=p/javascript juice-shop/routes/login.ts juice-shop/routes/changePassword.ts juice-shop/routes/resetPassword.ts juice-shop/routes/currentUser.ts juice-shop/routes/authenticatedUsers.ts juice-shop/routes/userProfile.ts juice-shop/routes/updateUserProfile.ts juice-shop/models/user.ts juice-shop/lib/insecurity.ts --json | python -m json.tool > reports/semgrep-auth-results.json
+```
+
 ---
 # How to run in your OWN MACHINE
  
