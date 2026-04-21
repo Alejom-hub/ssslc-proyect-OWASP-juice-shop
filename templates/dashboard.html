@@ -6,30 +6,227 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --crit-color: #721c24; }
-        .severity-ERROR { border-left: 8px solid #dc3545; }
+        body { background-color: #f0f2f5; }
+
+        /* ── Vulnerability cards ── */
+        .severity-ERROR  { border-left: 8px solid #dc3545; }
         .severity-WARNING { border-left: 8px solid #ffc107; }
         .error-card { border-left: 6px solid #6c757d; background-color: #f8f9fa; }
-        .code-block { background: #212529; color: #00ff00; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 0.9rem; }
-        .badge-stride { background-color: #6610f2; color: white; font-weight: bold; padding: 0.5em 0.8em; }
-        .risk-circle { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid #ddd; }
-        .risk-high { background-color: #dc3545; color: white; border-color: #a71d2a; }
+
+        .code-block {
+            background: #212529; color: #00ff00;
+            padding: 15px; border-radius: 5px;
+            font-family: 'Courier New', monospace; font-size: 0.85rem;
+        }
+
+        /* ── STRIDE badges ── */
+        .badge-stride { background-color: #6610f2; color: white; font-weight: bold; padding: 0.5em 0.9em; font-size: 0.9rem; }
+
+        /* ── Risk score badge ── */
+        .risk-badge {
+            min-width: 52px; height: 52px; border-radius: 12px;
+            display: inline-flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            font-weight: bold; font-size: 1.1rem;
+            border: 2px solid rgba(0,0,0,0.1);
+        }
+        .risk-high    { background-color: #dc3545; color: white; }
+        .risk-medium  { background-color: #fd7e14; color: white; }
+        .risk-low     { background-color: #198754; color: white; }
+
+        /* ── STRIDE detail table ── */
+        .stride-table { font-size: 0.88rem; }
+        .stride-table th { width: 170px; background-color: #f8f9fa; font-weight: 600; vertical-align: top; }
+        .stride-table td { vertical-align: top; }
+        .inline-code {
+            display: inline-block; background: #f4f4f4; border: 1px solid #ddd;
+            border-radius: 4px; padding: 1px 6px;
+            font-family: 'Courier New', monospace; font-size: 0.85em; color: #c0392b;
+        }
+
+        /* ── Findings table redesign ── */
+        .findings-table-wrap {
+            border-radius: 14px;
+            padding: 2px;
+            background: linear-gradient(120deg, #0ea5e9, #14b8a6, #22c55e);
+            box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+        }
+        .findings-table {
+            width: 100%;
+            margin-bottom: 0;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #fbfdff 0%, #f2f7ff 100%);
+        }
+        .findings-table th,
+        .findings-table td {
+            border: none;
+            border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+            padding: 0.85rem 0.95rem;
+            vertical-align: top;
+        }
+        .findings-table tr:last-child th,
+        .findings-table tr:last-child td {
+            border-bottom: none;
+        }
+        .findings-table th {
+            width: 190px;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 800;
+            color: #0f172a;
+            background: linear-gradient(180deg, #e2ebff 0%, #f4f8ff 100%);
+            position: relative;
+        }
+        .findings-table th::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10px;
+            bottom: 10px;
+            width: 4px;
+            border-radius: 999px;
+            background: #0ea5e9;
+        }
+        .findings-table td {
+            color: #1f2937;
+            font-size: 0.9rem;
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+        .findings-table tr:nth-child(2n) td {
+            background-color: rgba(239, 246, 255, 0.85);
+        }
+        .findings-table tr:hover td,
+        .findings-table tr:hover th {
+            background-color: #e9f5ff;
+            transition: background-color 0.2s ease;
+        }
+
+        @media (max-width: 768px) {
+            .findings-table-wrap {
+                border-radius: 12px;
+            }
+            .findings-table,
+            .findings-table tbody,
+            .findings-table tr,
+            .findings-table th,
+            .findings-table td {
+                display: block;
+                width: 100%;
+            }
+            .findings-table tr {
+                border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+            }
+            .findings-table tr:last-child {
+                border-bottom: none;
+            }
+            .findings-table th {
+                border-bottom: none;
+                width: 100%;
+                padding-bottom: 0.35rem;
+                border-left: none;
+            }
+            .findings-table th::before {
+                left: 0.95rem;
+                right: 0.95rem;
+                top: auto;
+                bottom: 0;
+                height: 3px;
+                width: auto;
+            }
+            .findings-table td {
+                padding-top: 0.35rem;
+                padding-bottom: 0.9rem;
+            }
+        }
+
+        /* ── Risk Matrix ── */
+        .risk-matrix-wrapper {
+            background: linear-gradient(135deg, #1a0a0a 0%, #2d0808 50%, #1a0a0a 100%);
+            border-radius: 16px; padding: 40px; margin-bottom: 40px;
+            position: relative; overflow: hidden;
+        }
+        .risk-matrix-wrapper::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(180,0,0,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .risk-matrix-title {
+            text-align: center; color: white; font-size: 2rem; font-weight: 900;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px rgba(255,80,80,0.8), 0 0 40px rgba(255,80,80,0.4);
+            margin-bottom: 6px;
+        }
+        .rm-impact-label {
+            text-align: center; color: #ccc; font-weight: 700;
+            letter-spacing: 3px; font-size: 0.85rem; margin-bottom: 16px;
+        }
+        .rm-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(3, 1fr);
+            grid-template-rows: 44px repeat(3, 1fr);
+            gap: 6px;
+            position: relative;
+        }
+        .rm-corner { /* empty top-left corner */ }
+        .rm-col-header {
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 700; letter-spacing: 1px; font-size: 0.9rem;
+            background: rgba(255,255,255,0.08); border-radius: 6px;
+        }
+        .rm-row-label {
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 700; letter-spacing: 1px; font-size: 0.85rem;
+            text-align: center;
+        }
+        .rm-cell {
+            min-height: 90px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px;
+            text-align: center; padding: 8px; line-height: 1.3;
+        }
+        .rm-red    { background-color: #e74c3c; color: white; }
+        .rm-orange { background-color: #e67e22; color: white; }
+        .rm-yellow { background-color: #f1c40f; color: #333; }
+        .rm-green  { background-color: #27ae60; color: white; }
+
+        .rm-prob-axis {
+            position: absolute; left: -50px; top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            color: #ccc; font-weight: 700; letter-spacing: 3px; font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        .rm-outer {
+            position: relative; padding-left: 40px;
+        }
+
+        /* ── Section headers ── */
+        .section-header {
+            border-left: 4px solid #6610f2; padding-left: 12px; margin-bottom: 20px;
+        }
     </style>
 </head>
-<body class="bg-light">
+<body>
 <div class="container my-5">
+
+    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1>Dashboard de Seguridad Semgrep</h1>
-            <p class="text-muted">Modelado de Amenazas basado en STRIDE</p>
+            <h1 class="fw-bold">Dashboard de Seguridad Semgrep</h1>
+            <p class="text-muted mb-0">Modelado de Amenazas basado en STRIDE + DREAD</p>
         </div>
         <div class="text-end">
-            <span class="badge bg-dark fs-5">Total: {{ stats.total }}</span>
-            <span class="badge bg-danger fs-5">Críticas: {{ stats.critical }}</span>
+            <span class="badge bg-dark fs-6 me-2">Total: {{ stats.total }}</span>
+            <span class="badge bg-danger fs-6">Críticas: {{ stats.critical }}</span>
         </div>
     </div>
-    
-    <div class="row mb-5">
+
+    <!-- Charts row -->
+    <div class="row mb-4">
         <div class="col-md-4">
             <div class="card p-3 shadow-sm h-100">
                 <h6 class="text-muted text-center fw-bold">Perfil STRIDE</h6>
@@ -50,8 +247,7 @@
         </div>
     </div>
 
-    
-
+    <!-- Error engine chart -->
     <div class="row mb-5">
         <div class="col-12">
             <div class="card p-3 shadow-sm">
@@ -66,45 +262,130 @@
         </div>
     </div>
 
-    <h3 class="mb-3 text-primary">Hallazgos Detectados</h3>
+    <!-- ══════════════ RISK MATRIX ══════════════ -->
+    <h3 class="section-header">Risk Matrix</h3>
+    <div class="risk-matrix-wrapper mb-5">
+        <div class="risk-matrix-title">RISK MATRIX</div>
+        <div class="rm-impact-label">IMPACT</div>
+
+        <div class="rm-outer">
+            <span class="rm-prob-axis">PROBABILITY</span>
+            <div class="rm-grid">
+                <!-- Header row -->
+                <div class="rm-corner"></div>
+                <div class="rm-col-header">LOW</div>
+                <div class="rm-col-header">MEDIUM</div>
+                <div class="rm-col-header">HIGH</div>
+
+                <!-- HIGH probability row -->
+                <div class="rm-row-label">HIGH</div>
+                <div class="rm-cell rm-yellow">{{ risk_matrix.HIGH_LOW | join('<br>')|safe if risk_matrix.HIGH_LOW else '' }}</div>
+                <div class="rm-cell rm-orange">{{ risk_matrix.HIGH_MEDIUM | join('<br>')|safe if risk_matrix.HIGH_MEDIUM else '' }}</div>
+                <div class="rm-cell rm-red">{{ risk_matrix.HIGH_HIGH | join('<br>')|safe if risk_matrix.HIGH_HIGH else '' }}</div>
+
+                <!-- MEDIUM probability row -->
+                <div class="rm-row-label">MEDIUM</div>
+                <div class="rm-cell rm-green">{{ risk_matrix.MEDIUM_LOW | join('<br>')|safe if risk_matrix.MEDIUM_LOW else '' }}</div>
+                <div class="rm-cell rm-yellow">{{ risk_matrix.MEDIUM_MEDIUM | join('<br>')|safe if risk_matrix.MEDIUM_MEDIUM else '' }}</div>
+                <div class="rm-cell rm-orange">{{ risk_matrix.MEDIUM_HIGH | join('<br>')|safe if risk_matrix.MEDIUM_HIGH else '' }}</div>
+
+                <!-- LOW probability row -->
+                <div class="rm-row-label">LOW</div>
+                <div class="rm-cell rm-green">{{ risk_matrix.LOW_LOW | join('<br>')|safe if risk_matrix.LOW_LOW else '' }}</div>
+                <div class="rm-cell rm-green">{{ risk_matrix.LOW_MEDIUM | join('<br>')|safe if risk_matrix.LOW_MEDIUM else '' }}</div>
+                <div class="rm-cell rm-yellow">{{ risk_matrix.LOW_HIGH | join('<br>')|safe if risk_matrix.LOW_HIGH else '' }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════ FINDINGS ══════════════ -->
+    <h3 class="section-header">Hallazgos Detectados</h3>
     {% for r in results %}
     <div class="card mb-4 shadow-sm severity-{{ r.extra.severity }}">
         <div class="card-body">
-            <div class="row align-items-center">
+
+            <!-- Title row -->
+            <div class="row align-items-start mb-3">
                 <div class="col-md-9">
-                    <div class="d-flex align-items-center mb-2">
+                    <div class="d-flex align-items-center mb-1">
                         <span class="badge badge-stride me-2">{{ r.stride_cat }}</span>
-                        <h5 class="card-title fw-bold mb-0">{{ r.check_id.split('.')[-1] | replace('-', ' ') | title }}</h5>
+                        <h5 class="card-title fw-bold mb-0">
+                            {{ r.check_id.split('.')[-1] | replace('-', ' ') | title }}
+                        </h5>
                     </div>
-                    <p class="text-secondary small mb-2">{{ r.path }} : Línea {{ r.start.line }}</p>
+                    <p class="text-secondary small mb-0">{{ r.path }} : Línea {{ r.start.line }}</p>
                 </div>
                 <div class="col-md-3 text-end">
-                    <div class="d-flex justify-content-end align-items-center">
-                        <div class="me-3 text-center">
-                            <small class="text-muted d-block">RISK</small>
-                            <div class="risk-circle {% if r.risk_score >= 18 %}risk-high{% endif %}">
-                                {{ r.risk_score }}
-                            </div>
-                        </div>
+                    <div class="d-flex flex-column align-items-end">
+                        <small class="text-muted mb-1">DREAD SCORE</small>
+                        <div class="risk-badge risk-{{ r.risk_level | lower }}">{{ r.risk_score }}</div>
+                        <small class="text-muted mt-1">{{ r.risk_level }}</small>
                     </div>
                 </div>
             </div>
-            
-            <p class="mt-2">{{ r.extra.message }}</p>
-            
+
+            <!-- STRIDE detail table -->
+            <div class="findings-table-wrap mb-3">
+            <table class="table stride-table findings-table">
+                <tbody>
+                    <tr>
+                        <th>Threat description</th>
+                        <td>{{ r.threat_description }}</td>
+                    </tr>
+                    <tr>
+                        <th>Threat target</th>
+                        <td>{{ r.threat_target }}</td>
+                    </tr>
+                    <tr>
+                        <th>STRIDE category</th>
+                        <td>
+                            <span class="badge badge-stride me-1">{{ r.stride_cat }}</span>
+                            {{ r.stride_label }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Risk rating</th>
+                        <td>
+                            <strong>{{ r.risk_score }} — {{ r.risk_level }}</strong>
+                            {% if r.dread_formula %}
+                            &nbsp;·&nbsp; <span class="text-muted small">{{ r.dread_formula }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if r.attack_technique %}
+                    <tr>
+                        <th>Attack technique</th>
+                        <td>{{ r.attack_technique }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if r.countermeasures %}
+                    <tr>
+                        <th>Countermeasures</th>
+                        <td>{{ r.countermeasures }}</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            </div>
+
+            <!-- Metadata badges -->
             <div class="mb-3">
                 <span class="badge bg-info text-dark">Confianza: {{ r.extra.metadata.confidence }}</span>
                 <span class="badge bg-secondary">CWE: {{ r.extra.metadata.cwe[0].split(':')[0] if r.extra.metadata.cwe else 'N/A' }}</span>
                 <span class="badge bg-light text-dark border">Probabilidad: {{ r.extra.metadata.likelihood }}</span>
+                <span class="badge bg-warning text-dark">Impacto: {{ r.extra.metadata.impact }}</span>
             </div>
 
+            <!-- Code location -->
             <div class="code-block">
-                <code>// Ubicación en código fuente:<br>L{{ r.start.line }}: {{ r.check_id }}</code>
+                <code>// Source location:<br>L{{ r.start.line }}: {{ r.check_id }}</code>
             </div>
+
         </div>
     </div>
     {% endfor %}
 
+    <!-- Engine errors -->
     <hr class="my-5">
     <h3 class="mb-3 text-secondary">Errores de Análisis (Motor)</h3>
     {% if not errors %}
@@ -123,18 +404,18 @@
             {% endfor %}
         </div>
     {% endif %}
+
 </div>
 
 <script>
-    // 1. Gráfica RADAR para STRIDE
     new Chart(document.getElementById('strideChart'), {
         type: 'radar',
         data: {
-            labels: ['S', 'T', 'R', 'I', 'D', 'E'],
+            labels: ['Spoofing', 'Tampering', 'Repudiation', 'Info Disc.', 'Denial', 'Escalation'],
             datasets: [{
                 label: 'Frecuencia',
                 data: [
-                    {{ stats.stride.S }}, {{ stats.stride.T }}, {{ stats.stride.R }}, 
+                    {{ stats.stride.S }}, {{ stats.stride.T }}, {{ stats.stride.R }},
                     {{ stats.stride.I }}, {{ stats.stride.D }}, {{ stats.stride.E }}
                 ],
                 backgroundColor: 'rgba(102, 16, 242, 0.2)',
@@ -145,7 +426,6 @@
         options: { scales: { r: { beginAtZero: true } } }
     });
 
-    // 2. Gráfica de Severidad
     new Chart(document.getElementById('severityChart'), {
         type: 'doughnut',
         data: {
@@ -157,7 +437,6 @@
         }
     });
 
-    // 3. Gráfica de Categorías
     new Chart(document.getElementById('categoryChart'), {
         type: 'bar',
         data: {
@@ -171,7 +450,6 @@
         options: { indexAxis: 'y' }
     });
 
-    // 4. Gráfica de Errores por Tipo
     new Chart(document.getElementById('errorsChart'), {
         type: 'bar',
         data: {
@@ -187,9 +465,7 @@
         options: {
             indexAxis: 'y',
             maintainAspectRatio: false,
-            scales: {
-                x: { beginAtZero: true, ticks: { stepSize: 1 } }
-            }
+            scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
         }
     });
 </script>
